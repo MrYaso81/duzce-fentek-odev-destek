@@ -1,0 +1,11 @@
+{
+  "name": "Düzce FENTEK Ödev Destek",
+  "short_name": "FENTEK Destek",
+  "description": "Ödevini paylaş, akranından öğren, öğretmene sor.",
+  "lang": "tr",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f2f5f3",
+  "theme_color": "#16a34a",
+  "icons": []
+}

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Telefon görünümü için şart -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#16a34a" />
+  <meta name="description" content="Düzce FENTEK Ödev Destek: ödevini paylaş, akranından öğren, öğretmene sor." />
+  <title>Düzce FENTEK Ödev Destek</title>
+  <link rel="manifest" href="manifest.json" />
+  <!-- Okunaklı font: Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- İkon seti: Lucide 1.57.0'a sabitli (internette yüklenir, yoksa yazılar kalır) -->
+  <script src="https://unpkg.com/lucide@1.57.0/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+  <!-- Sol kenar tetik bölgesi: fare yaklaşınca menü açılır (masaüstü) -->
+  <div id="kenarBolge" aria-hidden="true"></div>
+  <!-- Yan menü: dar ikonlar, hover/hamburger ile genişler -->
+  <aside id="yanMenu" aria-label="Yan menü">
+    <div class="yanUst" id="yanUst" title="Hesabım">
+      <div class="avatar" id="yanAvatar">?</div>
+      <div class="yazi"><b id="yanAd">Misafir</b><br /><small id="yanRol">Giriş yap</small></div>
+    </div>
+    <button class="yanOge" data-sayfa="akis"><i data-lucide="home"></i><span class="yazi">Ana Sayfa</span></button>
+    <button class="yanOge" data-sayfa="kesfet"><i data-lucide="search"></i><span class="yazi">Keşfet</span></button>
+    <button class="yanOge" data-aksiyon="paylas"><i data-lucide="plus-circle"></i><span class="yazi">Paylaş</span></button>
+    <button class="yanOge" data-sayfa="hoca"><i data-lucide="graduation-cap"></i><span class="yazi">Öğretmene Sor</span></button>
+    <button class="yanOge" data-sayfa="odalar"><i data-lucide="users"></i><span class="yazi">Çalışma Odaları</span></button>
+    <button class="yanOge" data-sayfa="sohbet"><i data-lucide="bot"></i><span class="yazi">AI Asistan</span></button>
+    <button class="yanOge" data-sayfa="kaydedilenler"><i data-lucide="bookmark"></i><span class="yazi">Kaydedilenler</span></button>
+    <button class="yanOge" data-sayfa="notlar"><i data-lucide="notebook"></i><span class="yazi">Notlarım</span></button>
+    <button class="yanOge" data-sayfa="liderlik"><i data-lucide="trophy"></i><span class="yazi">Liderlik Tablosu</span></button>
+    <button class="yanOge" data-sayfa="rozetler"><i data-lucide="award"></i><span class="yazi">Rozetlerim</span></button>
+    <button class="yanOge" data-sayfa="bildirim"><i data-lucide="bell"></i><span class="yazi">Bildirimler</span></button>
+    <button class="yanOge" data-sayfa="profil"><i data-lucide="user"></i><span class="yazi">Profil</span></button>
+    <button class="yanOge" data-sayfa="program"><i data-lucide="calendar-days"></i><span class="yazi">Ders Programı</span></button>
+    <button class="yanOge" data-sayfa="ekarne"><i data-lucide="file-text"></i><span class="yazi">E-Karne</span></button>
+    <button class="yanOge" data-sayfa="hesap"><i data-lucide="key-round"></i><span class="yazi">Hesap</span></button>
+    <button class="yanOge" data-sayfa="denetim" id="yanDenetim" style="display:none"><i data-lucide="shield-check"></i><span class="yazi">Denetim</span></button>
+    <button class="yanOge" data-sayfa="ayarlar"><i data-lucide="settings"></i><span class="yazi">Ayarlar</span></button>
+    <button class="yanOge" data-sayfa="kurallar"><i data-lucide="scroll-text"></i><span class="yazi">Topluluk Kuralları</span></button>
+    <button class="yanOge" data-aksiyon="cikis"><i data-lucide="log-out"></i><span class="yazi">Çıkış</span></button>
+    <div class="yanAlt">
+      <label class="anahtar" title="Karanlık mod"><input type="checkbox" id="btnKaranlik" /><span></span><span class="yazi">Karanlık</span></label>
+    </div>
+  </aside>
+  <!-- Karartma: mobilde menü açıkken arka plan -->
+  <div id="karartma"></div>
+  <div class="kabuk">
+  <div class="ana">
+  <!-- Yapışkan üst bar: logo, hamburger, arama, bildirim, profil -->
+  <div id="ustBar">
+    <button id="btnHamburger" aria-label="Menüyü aç/kapat" aria-expanded="false" aria-controls="yanMenu"><i data-lucide="menu"></i></button>
+    <span class="logoYazi" aria-hidden="true">F</span>
+    <b>Düzce FENTEK Ödev Destek</b>
+    <input id="ustArama" placeholder="Ara... ( / )" aria-label="Genel arama" />
+    <button id="ustZil" aria-label="Bildirimler"><i data-lucide="bell"></i><span id="ustBildirim"></span></button>
+    <button id="ustProfil" aria-label="Profilim"><i data-lucide="user"></i></button>
+  </div>
+  <!-- Üst başlık: logo + ad yanda -->
+  <header>
+    <div class="baslikSatir">
+      <span class="logoYazi buyuk" aria-hidden="true">F</span>
+      <h1>Düzce FENTEK Ödev Destek</h1>
+    </div>
+    <p>Ödevini paylaş, akranından öğren. Olmazsa hocaya sor.</p>
+    <p id="aktifKullanici">👤 Giriş yapılmadı</p>
+    <p id="modBilgi" class="ipucu" style="color:#e8f5e9">💾 Yerel mod</p>
+    <button id="btnTekrarDene" style="display:none">🔄 Tekrar dene</button>
+  </header>
+
+  <!-- Alt navigasyon: siyah hap menü, aktif altın olur -->
+  <!-- İpucu: 1-6 tuşları da bu sayfaları açar -->
+  <nav aria-label="Ana menü">
+    <button id="btnAkis" title="Kısayol: 1"><i data-lucide="home"></i><small>Akış</small> <span id="bildirimSayi"></span></button>
+    <button id="btnKesfet" title="Kısayol: 2"><i data-lucide="search"></i><small>Keşfet</small></button>
+    <button id="btnHoca" title="Kısayol: 3"><i data-lucide="graduation-cap"></i><small>Öğretmen</small></button>
+    <button id="btnProfil" title="Kısayol: 4"><i data-lucide="user"></i><small>Profil</small></button>
+    <button id="btnKurallar" title="Kısayol: 5"><i data-lucide="scroll-text"></i><small>Kurallar</small></button>
+    <button id="btnHesap" title="Kısayol: 6"><i data-lucide="settings"></i><small>Hesap</small></button>
+  </nav>
+
+  <!-- AKIŞ SAYFASI -->
+  <section id="sayfaAkis">
+    <!-- Kahraman: bugünün sorusu + hızlı işlemler -->
+    <div class="kahraman">
+      <h2>Bugün ne öğrenmek istersin?</h2>
+      <div class="hizliIslem">
+        <button id="hizliSoru"><i data-lucide="help-circle"></i>Soru sor</button>
+        <button id="hizliAnlat"><i data-lucide="book-open"></i>Konu anlat</button>
+        <button id="hizliGrup"><i data-lucide="users"></i>Grup oluştur</button>
+        <button id="hizliAI"><i data-lucide="bot"></i>AI ile çalış</button>
+      </div>
+    </div>
+    <h2>📸 Paylaş (sadece ders)</h2>
+    <p class="ipucu">⌨️ <kbd>1</kbd>-<kbd>6</kbd> sayfa • <kbd>/</kbd> arama • <kbd>N</kbd> yeni gönderi • <kbd>Ctrl</kbd>+<kbd>Enter</kbd> paylaş • <kbd>Esc</kbd> akışa dön</p>
+    <!-- Adım çubuğu: 4 adımda paylaşım -->
+    <div class="adimCubuk"><div id="adimBar"></div></div>
+    <div class="sihirbazAdim acik" id="adim1">
+      <b>1. Tür ve ders seç</b>
+      <!-- Gönderi türü: Soru / Çözüm / Not -->
+      <select id="tur" aria-label="Gönderi türü">
+        <option>Soru</option>
+        <option>Çözüm Paylaşımı</option>
+        <option>Konu Özeti</option>
+      </select>
+      <!-- Ders seçmeden paylaşılamaz (etik kural) -->
+      <select id="ders" aria-label="Ders (zorunlu)">
+        <option value="">Ders seç (zorunlu)</option>
+        <option>Matematik</option><option>Fizik</option><option>Kimya</option>
+        <option>Biyoloji</option><option>Türkçe</option><option>Tarih</option>
+        <option>İngilizce</option><option>Coğrafya</option><option>Diğer</option>
+      </select>
+      <select id="sinif" aria-label="Sınıf seviyesi">
+        <option>5. Sınıf</option><option>6. Sınıf</option><option>7. Sınıf</option>
+        <option>8. Sınıf</option><option>9. Sınıf</option><option>10. Sınıf</option>
+        <option>11. Sınıf</option><option>12. Sınıf</option><option>Mezun</option>
+      </select>
+      <button id="btnIleri1">İleri →</button>
+    </div>
+    <div class="sihirbazAdim" id="adim2">
+      <b>2. Sorunu yaz</b>
+      <input id="baslik" placeholder="Başlık" aria-label="Başlık" />
+      <textarea id="aciklama" placeholder="Sorunu anlat, çözüm yolunu yaz" aria-label="Açıklama"></textarea>
+      <button id="btnGeri2" class="ikincil">← Geri</button>
+      <button id="btnIleri2">İleri →</button>
+    </div>
+    <div class="sihirbazAdim" id="adim3">
+      <b>3. Fotoğraf ekle (isteğe bağlı, en fazla 4)</b>
+      <!-- Sürükle-bırak alanı: dosyayı buraya bırak ya da tıkla -->
+      <div class="birakAlan" id="birakAlan">📷 Sürükle-bırak ya da tıkla</div>
+      <input id="resimler" type="file" accept="image/*" multiple aria-label="Resimler" />
+      <div class="kucukOnizleme" id="onizThumb"></div>
+      <button id="btnGeri3" class="ikincil">← Geri</button>
+      <button id="btnIleri3">İleri →</button>
+    </div>
+    <div class="sihirbazAdim" id="adim4">
+      <b>4. Önizleme ve paylaş</b>
+      <div id="onizleme" class="kutu"></div>
+      <button id="btnGeri4" class="ikincil">← Geri</button>
+      <button id="btnEkle">Paylaş</button>
+    </div>
+
+    <h2>🔍 Filtrele</h2>
+    <input id="ara" placeholder="Ara (başlık / açıklama)" />
+    <select id="filtreDers"><option value="">Tüm dersler</option></select>
+    <select id="filtreTur"><option value="">Tüm türler</option><option>Soru</option><option>Çözüm Paylaşımı</option><option>Konu Özeti</option></select>
+    <select id="filtreDurum"><option value="">Tümü</option><option value="bekleyen">Çözülmemiş</option><option value="cozuldu">Çözülmüş</option></select>
+    <select id="siralama"><option value="yeni">En yeni</option><option value="populer">En popüler</option></select>
+
+    <h2>Akış</h2>
+    <!-- Hikaye şeridi: son çözülenler, tıkla o derse süz -->
+    <div id="cozulenSerit" class="serit"></div>
+    <div id="odevListesi"></div>
+    <button id="btnDaha">Daha fazla göster</button>
+  </section>
+
+  <!-- KEŞFET SAYFASI: popüler + resimli ızgara -->
+  <section id="sayfaKesfet" style="display:none">
+    <h2>🔍 Keşfet</h2>
+    <p>En beğenilen ders gönderileri. Tıkla, akışta açılır.</p>
+    <div id="kesfetGrid" class="grid"></div>
+  </section>
+
+  <!-- HOCAYA SOR SAYFASI -->
+  <section id="sayfaHoca" style="display:none">
+    <h2>👨‍🏫 Doğrulanmış Öğretmenler</h2>
+    <div id="hocaKartlari"></div>
+    <h2>✉️ Öğretmene Soru Gönder</h2>
+    <select id="hocaSec"></select>
+    <select id="hDers"><option>Matematik</option><option>Fizik</option><option>Kimya</option><option>Biyoloji</option><option>Türkçe</option><option>Tarih</option></select>
+    <input id="hBaslik" placeholder="Soru başlığı" />
+    <textarea id="hocaSoru" placeholder="Sorunu yaz"></textarea>
+    <!-- Gizlilik: özel mi herkese açık mı -->
+    <select id="hGizli"><option value="ozel">Özel (sadece hoca görür)</option><option value="acik">Herkese açık olabilir</option></select>
+    <button id="btnHocaSor">Öğretmene Gönder</button>
+    <h2>Sorularım</h2>
+    <div id="hocaListesi"></div>
+    <h2>📥 Gelen Sorular (öğretmen paneli)</h2>
+    <div id="gelenSorular"></div>
+    <h2>🛡️ Bana Atanan Vakalar (hoca)</h2>
+    <p class="ipucu">Denetimin sana yönlendirdiği şüpheli içerikler. İçeriği değil, yalnız üstbilgiyi görürsün.</p>
+    <div id="ogretmenVakalar"></div>
+    <h2>🔒 Gizli Sınav Havuzu (öğretmen)</h2>
+    <p class="ipucu">Henüz yapılmamış sınav soruları. Şifreli saklanır, öğrenciler göremez.</p>
+    <div id="havuzAlani"></div>
+  </section>
+
+  <!-- PROFİL SAYFASI -->
+  <section id="sayfaProfil" style="display:none">
+    <h2>🙂 Profil</h2>
+    <div id="profilBilgi"></div>
+    <div id="profilJog"></div>
+    <h2>🔔 Bildirimler</h2>
+    <div id="bildirimListesi"></div>
+    <h2>🏆 Liderlik (haftalık puan)</h2>
+    <div id="liderlik"></div>
+    <h2>🔖 Kaydettiklerim</h2>
+    <div id="kaydedilenler"></div>
+    <h2>➕ Takip Et</h2>
+    <input id="takipAd" placeholder="Kullanıcı adı yaz" />
+    <button id="btnTakip">Takip Et / Bırak</button>
+    <button id="btnProfGoster">Profili Gör</button>
+    <h2>🔍 İncelemedekiler (itiraz)</h2>
+    <div id="incelemelerim"></div>
+    <!-- Video yükleme kısıtı + itiraz durumu (kendi hesabım) -->
+    <div id="videoHesapDurum"></div>
+  </section>
+
+  <!-- KAYDEDİLENLER: özel bölüm -->
+  <section id="sayfaKaydedilenler" style="display:none">
+    <h2>🔖 Kaydedilenler</h2>
+    <p class="ipucu">Sonra bakmak için ayırdıkların burada durur.</p>
+    <div id="kayitListesi"></div>
+  </section>
+
+  <!-- LİDERLİK: özel bölüm -->
+  <section id="sayfaLiderlik" style="display:none">
+    <h2>🏆 Liderlik Tablosu</h2>
+    <p class="ipucu">Yardım ettikçe puan kazanırsın. İlk 10 burada.</p>
+    <div id="liderTablo"></div>
+  </section>
+
+  <!-- ROZETLER: özel bölüm -->
+  <section id="sayfaRozetler" style="display:none">
+    <h2>🏅 Rozetlerim</h2>
+    <p class="ipucu">Kazandıkların renkli, kilitliler gri. Hedefe yürü!</p>
+    <div id="rozetVitrin"></div>
+  </section>
+
+  <!-- BİLDİRİMLER: özel bölüm -->
+  <section id="sayfaBildirim" style="display:none">
+    <h2>🔔 Bildirimler</h2>
+    <div id="bildirimPaneli"></div>
+  </section>
+
+  <!-- DENETİM: yalnız müdür yardımcısı + admin (vaka kuyruğu) -->
+  <section id="sayfaDenetim" style="display:none">
+    <h2>🛡️ Denetim Paneli</h2>
+    <p class="ipucu" id="aiModRozet">Denetim modu yükleniyor...</p>
+    <p class="ipucu">AI tespiti kesin hüküm değil, incelenecek şüphedir. Kalıcı ceza yalnız insan kararıyla.</p>
+    <div id="denetimKuyruk"></div>
+    <!-- Video çözüm inceleme paneli (moderatör) -->
+    <div id="videoDenetim"></div>
+  </section>
+
+  <!-- DERS PROGRAMI: sınıf seç, sürükle-bırak, yazdır, takip et -->
+  <section id="sayfaProgram" style="display:none">
+    <h2>📅 Ders Programı</h2>
+    <p class="ipucu" id="programDurum"></p>
+    <div id="programCakisma" style="display:none" class="kutu">
+      <b>⚠️ Başka cihazda değişmiş!</b>
+      <p>Sunucudaki program seninkinden farklı. Hangisi kalsın?</p>
+      <button id="btnCakismaSunucu">Sunucuyu Al (benim bekleyenim silinir)</button>
+      <button id="btnCakismaBenim" class="ikincil">Benimkini Yaz (sunucuyu ezerim)</button>
+    </div>
+    <p class="ipucu">1) Sınıfını seç → 2) Dersi kutudan tabloya sürükle (telefonda: derse dokun, hücreye dokun) → 3) Yaptıkça ✓ işaretle.</p>
+    <label>Sınıfın
+      <select id="programSinif" aria-label="Sınıf seç">
+        <option value="">Seç...</option>
+        <option>5. Sınıf</option><option>6. Sınıf</option><option>7. Sınıf</option>
+        <option>8. Sınıf</option><option>9. Sınıf</option><option>10. Sınıf</option>
+        <option>11. Sınıf</option><option>12. Sınıf</option>
+      </select>
+    </label>
+    <h3>Ders Havuzu</h3>
+    <div id="dersHavuzu" class="havuz"></div>
+    <div class="ozelDersSatir">
+      <input id="ozelDersAd" placeholder="Özel ders ekle (örn. Satranç)" maxlength="30" aria-label="Özel ders adı" />
+      <button id="btnOzelDersEkle">Ekle</button>
+    </div>
+    <h3>Haftalık İlerleme: <span id="programYuzde">%0</span></h3>
+    <div class="seviyeCubuk"><div id="programBar" style="width:0%"></div></div>
+    <div class="programKaydir">
+      <table id="programTablo" aria-label="Haftalık ders programı"></table>
+    </div>
+    <button id="btnProgramTemizle" class="ikincil">Temizle</button>
+    <button id="btnProgramYazdir">🖨️ Çıktı Al</button>
+  </section>
+
+  <!-- E-KARNE: deneme sonuçları + dönem takipleri + çıktı -->
+  <section id="sayfaEkarne" style="display:none">
+    <h2>📊 E-Karne</h2>
+    <p class="ipucu">Denemeni kaydet, netin otomatik hesaplansın. Tabloların ayrı yazdırma tuşu var.</p>
+    <div id="gocBanner" style="display:none" class="kutu"></div>
+    <div class="yazdir-alani">
+      <h3>Deneme Kaydet</h3>
+      <input id="denemeTarih" type="date" aria-label="Deneme tarihi" />
+      <input id="denemeYayin" placeholder="Yayın (örn. Final)" maxlength="30" aria-label="Yayın" />
+      <select id="denemeTur" aria-label="Deneme türü">
+        <option>Ders Denemesi</option>
+        <option>Genel Deneme</option>
+      </select>
+      <select id="denemeKural" aria-label="Net kuralı">
+        <option value="4y1d">4 yanlış 1 doğruyu götürür</option>
+        <option value="3y1d">3 yanlış 1 doğruyu götürür</option>
+        <option value="yok">Yanlış götürmez</option>
+      </select>
+      <input id="denemeDers" placeholder="Ders (örn. Matematik)" maxlength="30" aria-label="Ders" />
+      <input id="denemeSoru" type="number" placeholder="Soru sayısı" min="1" max="500" aria-label="Soru sayısı" />
+      <input id="denemeDogru" type="number" placeholder="Doğru" min="0" max="500" aria-label="Doğru" />
+      <input id="denemeYanlis" type="number" placeholder="Yanlış" min="0" max="500" aria-label="Yanlış" />
+      <button id="btnDenemeEkle">Kaydet</button>
+      <h3>Denemelerim</h3>
+      <div id="denemeListesi"></div>
+      <h3>Yedekle / Geri Yükle</h3>
+      <button id="btnEkarneDis" class="ikincil">📥 Dışa Aktar (JSON indir)</button>
+      <input id="dosyaEkarne" type="file" accept="application/json" aria-label="Yedek dosyası seç" />
+      <button id="btnEkarneIc" class="ikincil">📤 İçe Aktar</button>
+    </div>
+    <div id="alanGrafik">
+      <h3>Net Grafiği</h3>
+      <p class="ipucu">Noktaların üstüne gel (veya dokun), detayı gör. Eklendikçe çizgi uzar.</p>
+      <select id="grafikDers" aria-label="Grafik ders filtresi (tablolarla ortak)"></select>
+      <select id="ekarneTur" aria-label="Tür filtresi (grafik+tablolar)">
+        <option>Tümü</option><option>Ders Denemesi</option><option>Genel Deneme</option>
+      </select>
+      <label><input id="grafikNorm" type="checkbox" style="width:auto;display:inline" /> 0-100'e normalize et (farklı sınavları karşılaştır)</label>
+      <div style="position:relative">
+        <canvas id="grafikTuval" height="220" aria-label="Net grafiği"></canvas>
+        <div id="grafikIpucu" class="grafikIpucu" style="display:none"></div>
+      </div>
+      <h4>Nokta Listesi (klavye + dokunmatik)</h4>
+      <div id="grafikTablo"></div>
+    </div>
+    <div id="alanGunluk">
+      <h3>Günlük Takip <button class="ikincil" data-yazdir="gunluk">🖨️ Yazdır</button></h3>
+      <div class="programKaydir"><table class="cizgili" id="tabloGunluk"></table></div>
+    </div>
+    <div id="alanHaftalik">
+      <h3>Haftalık Takip <button class="ikincil" data-yazdir="haftalik">🖨️ Yazdır</button></h3>
+      <div class="programKaydir"><table class="cizgili" id="tabloHaftalik"></table></div>
+    </div>
+    <div id="alanAylik">
+      <h3>Aylık Takip <button class="ikincil" data-yazdir="aylik">🖨️ Yazdır</button></h3>
+      <div class="programKaydir"><table class="cizgili" id="tabloAylik"></table></div>
+    </div>
+    <div id="alanYillik">
+      <h3>Yıllık Özet <button class="ikincil" data-yazdir="yillik">🖨️ Yazdır</button></h3>
+      <div class="programKaydir"><table class="cizgili" id="tabloYillik"></table></div>
+    </div>
+  </section>
+
+  <!-- KURALLAR SAYFASI -->
+  <section id="sayfaKurallar" style="display:none">
+    <h2>📜 Topluluk Kuralları</h2>
+    <div class="kutu">
+      <p>✅ Sadece <b>ders</b> içeriği. Ders seçmeden paylaşım olmaz.</p>
+      <p>✅ Çözümü <b>anlatarak</b> yardım et.</p>
+      <p>🚫 Hakaret, küfür, zorbalık, reklam, özel bilgi yasak.</p>
+      <p>⚠️ 3 şikayet alan gönderi gizlenir. 3 uyarı alan hesap askıya alınır.</p>
+      <p>🔒 Hoca-öğrenci iletişimi sadece soru üzerinden, özel mesaj yok.</p>
+    </div>
+    <h2>⌨️ Tuş Kombinasyonları</h2>
+    <div class="kutu">
+      <p><kbd>1</kbd> Akış • <kbd>2</kbd> Keşfet • <kbd>3</kbd> Hoca • <kbd>4</kbd> Profil • <kbd>5</kbd> Kurallar • <kbd>6</kbd> Hesap</p>
+      <p><kbd>/</kbd> aramaya git • <kbd>N</kbd> yeni gönderi yaz • <kbd>D</kbd> karanlık mod</p>
+      <p><kbd>Ctrl</kbd>+<kbd>Enter</kbd> yazarken paylaş/gönder • <kbd>Esc</kbd> akışa dön</p>
+      <p class="ipucu">Not: yazı yazarken sayı tuşları çalışmaz, önce <kbd>Esc</kbd> ile kutudan çık.</p>
+    </div>
+  </section>
+
+  <!-- HESAP SAYFASI -->
+  <section id="sayfaHesap" style="display:none">
+    <h2>👤 Hesap Aç</h2>
+    <input id="kayitAd" placeholder="Kullanıcı adı (takma ad olur)" />
+    <input id="kayitSifre" type="password" placeholder="Şifre" />
+    <select id="kayitRol"><option>Öğrenci</option><option>Öğretmen</option></select>
+    <input id="kayitBrans" placeholder="Branş (öğretmensen, örn: Matematik)" />
+    <input id="kayitSinif" placeholder="Sınıf (öğrenciysen, örn: 9)" />
+    <!-- Kuralları kabul zorunlu -->
+    <label><input id="kayitKural" type="checkbox" style="width:auto;display:inline" /> Kuralları okudum, kabul ediyorum</label>
+    <button id="btnKayit">Hesap Aç</button>
+    <h2>🔑 Oturum Aç</h2>
+    <input id="girisAd" placeholder="Kullanıcı adın" />
+    <input id="girisSifre" type="password" placeholder="Şifren" />
+    <button id="btnGiris">Giriş Yap</button>
+    <button id="btnCikis">Çıkış Yap</button>
+    <h2>🔑 Şifre İşlemleri</h2>
+    <input id="sifreEski" type="password" placeholder="Eski şifren (değiştirmek için)" aria-label="Eski şifre" />
+    <input id="sifreYeni" type="password" placeholder="Yeni şifren" aria-label="Yeni şifre" />
+    <button id="btnSifreDegistir">Şifremi Değiştir</button>
+    <input id="sifreUnutAd" placeholder="Kullanıcı adın (unuttuysan)" aria-label="Şifresini unutan kullanıcı" />
+    <button id="btnSifreUnuttum" class="ikincil">Şifremi Unuttum</button>
+    <p class="ipucu">Unutma isteği e-posta GÖNDERMEZ (servis yok). Yöneticinden sıfırlama iste.</p>
+    <h2>🛠️ Admin Paneli (sadece admin görür)</h2>
+    <div id="adminAlani"></div>
+    <h2>♻️ Demo</h2>
+    <button id="btnSifirla">Demoyu sıfırla (örnek veriler)</button>
+  </section>
+
+  <!-- AI ASİSTAN: eğitim sohbeti (moderasyondan ayrı servis!) -->
+  <section id="sayfaSohbet" style="display:none">
+    <h2>🤖 AI Asistan</h2>
+    <p class="ipucu" id="sohbetMod">Mod yükleniyor...</p>
+    <button id="btnSohbetYeni">+ Yeni Sohbet</button>
+    <div id="sohbetListe"></div>
+    <h3 id="sohbetBaslik">Sohbet seç</h3>
+    <div id="sohbetMesaj" aria-live="polite"></div>
+    <input id="sohbetGirdi" placeholder="Sorunu yaz (ipucuyla çözeriz)" maxlength="2000" aria-label="Sohbet girdisi" />
+    <button id="btnSohbetGonder">Gönder</button>
+    <button id="btnSohbetDurdur" class="ikincil" style="display:none">Durdur</button>
+    <button id="btnSohbetTekrar" class="ikincil" style="display:none">Tekrar Dene</button>
+  </section>
+
+  <!-- ÇALIŞMA ODALARI: derslik grup sohbeti (denetimli) -->
+  <section id="sayfaOdalar" style="display:none">
+    <h2>Çalışma Odaları</h2>
+    <p class="ipucu">Aynı dersin öğrencileriyle grupça çalış. Kişisel bilgi ve özel mesaj yok, her mesaj denetlenir.</p>
+    <input id="odaAd" placeholder="Oda adı (örn. 9. Sınıf Matematik)" maxlength="60" aria-label="Oda adı" />
+    <select id="odaDers" aria-label="Oda dersi">
+      <option>Matematik</option><option>Fizik</option><option>Kimya</option>
+      <option>Biyoloji</option><option>Türkçe</option><option>Tarih</option>
+      <option>İngilizce</option><option>Coğrafya</option><option>Diğer</option>
+    </select>
+    <button id="btnOdaAc">Oda Aç</button>
+    <div id="odaListesi"></div>
+    <div id="odaIci" style="display:none">
+      <button id="btnOdaGeri" class="ikincil">← Odalar</button>
+      <h3 id="odaBaslik"></h3>
+      <div id="odaMesajlar" aria-live="polite"></div>
+      <input id="odaMesaj" placeholder="Mesajın (dersle ilgili)" maxlength="500" aria-label="Mesajın" />
+      <button id="btnMesajGonder">Gönder</button>
+    </div>
+  </section>
+
+  <!-- AYARLAR: tema + hareket + bilgi -->
+  <section id="sayfaAyarlar" style="display:none">
+    <h2>Ayarlar</h2>
+    <label>Tema
+      <select id="ayarTema" aria-label="Tema">
+        <option value="acik">Açık</option>
+        <option value="koyu">Koyu</option>
+      </select>
+    </label>
+    <label>Vurgu rengi
+      <select id="ayarVurgu" aria-label="Vurgu rengi">
+        <option value="yesil">Yeşil</option>
+        <option value="mavi">Mavi</option>
+        <option value="mor">Mor</option>
+        <option value="turuncu">Turuncu</option>
+      </select>
+    </label>
+    <label><input id="ayarHareket" type="checkbox" style="width:auto;display:inline" /> Animasyonları azalt</label>
+    <label>Sunucu adresi (aynı Wi-Fi'deki başka bilgisayar için)
+      <input id="ayarApi" placeholder="http://localhost:3001" aria-label="Sunucu adresi" />
+    </label>
+    <button id="btnAyarKaydet">Kaydet</button>
+    <p class="ipucu">Düzce FENTEK Ödev Destek v3 • Verilerin bu cihazda ve (giriş yaptıysan) sunucuda saklanır. 18 yaş altıysan velini bilgilendir.</p>
+  </section>
+
+  <!-- NOTLARIM: kişisel notlar (başlık + düz metin + ders + tarih + etiket rengi + arama) -->
+  <section id="sayfaNotlar" style="display:none">
+    <h2>📝 Notlarım</h2>
+    <p class="ipucu" id="notDepo"></p>
+    <div class="notArac">
+      <input id="notAra" placeholder="Notlarda ara (başlık / içerik)" aria-label="Notlarda ara" />
+      <select id="notFiltreDers" aria-label="Ders filtresi"><option value="">Tüm dersler</option></select>
+      <label class="notTarihEtiket">Tarih
+        <input id="notFiltreTarih" type="date" aria-label="Tarih filtresi" />
+      </label>
+      <button id="btnNotFiltreTemizle" class="ikincil" type="button">Filtreleri temizle</button>
+      <button id="btnNotYeni" type="button">+ Yeni Not</button>
+    </div>
+    <p class="ipucu" id="notFiltreOzeti" aria-live="polite"></p>
+    <!-- Not düzenleyici: açık KAYDET (otomatik değil); kaydedilmeden "Kaydedildi" yazılmaz -->
+    <div id="notDuzenleyici" class="kutu" style="display:none" aria-label="Not düzenleyici">
+      <h3 id="notDuzenBaslik">Yeni not</h3>
+      <label for="notBaslik">Başlık <span class="zorunlu">(zorunlu)</span></label>
+      <input id="notBaslik" placeholder="Örn. Türev kuralları" maxlength="80" />
+      <label for="notIcerik">Notun</label>
+      <textarea id="notIcerik" placeholder="Düz metin yaz (kalın/bağlantı yok, güvenli)." maxlength="5000" rows="6"></textarea>
+      <div class="notSatir">
+        <label for="notDersSec">Ders (isteğe bağlı)
+          <select id="notDersSec"><option value="">Seçme</option></select>
+        </label>
+        <label for="notTarihSec">Tarih (isteğe bağlı)
+          <input id="notTarihSec" type="date" />
+        </label>
+      </div>
+      <div class="notRenkSec" role="group" aria-label="Etiket rengi">
+        <span class="ipucu">Etiket rengi:</span>
+        <!-- renk düğmeleri JS ile dolar; renk adı yazıyla da yazılır (yalnız renge güvenilmez) -->
+      </div>
+      <label class="notSabitEtiket"><input id="notSabit" type="checkbox" /> 📌 Sabitle (üstte dursun)</label>
+      <div class="notDugmeler">
+        <button id="btnNotKaydet" type="button">Kaydet</button>
+        <button id="btnNotVazgec" class="ikincil" type="button">Vazgeç</button>
+        <button id="btnNotSil" class="tehlike" type="button" style="display:none">Sil</button>
+      </div>
+      <small id="notDurum" class="notDurum" role="status" aria-live="polite"></small>
+    </div>
+    <div id="notListe"></div>
+  </section>
+
+  </div><!-- .ana sonu -->
+  <!-- Sağ yardımcı panel (geniş ekranda) -->
+  <aside id="sagPanel" aria-label="Yardımcı panel">
+    <!-- Panel kişiselleştirme: kart göster/gizle + sırala (tercih hesap+ortam başına saklanır) -->
+    <div id="panelAracCubuk">
+      <button id="btnPanelDuzen" class="ikincil" type="button" aria-pressed="false">⚙️ Paneli düzenle</button>
+      <button id="btnPanelVarsayilan" class="ikincil" type="button" style="display:none">↩️ Varsayılan düzene dön</button>
+    </div>
+    <div id="panelKartlar">
+      <!-- Saat: canlı 24 saat + Türkçe tarih (yalnız bu kart tazelenir, panel tümden çizilmez) -->
+      <div class="panelKutu" data-kart="saat">
+        <h3>🕒 Saat</h3>
+        <div id="saatKutu">
+          <div id="saatDijital" class="saatDijital">--:--</div>
+          <div id="saatTarih" class="saatTarih">Tarih yükleniyor…</div>
+        </div>
+      </div>
+      <!-- Mini takvim: pazartesi başlar, bugün/seçili ayrı, notlu günler işaretli -->
+      <div class="panelKutu" data-kart="takvim">
+        <h3>📅 Takvim</h3>
+        <div class="takvimUst">
+          <button id="btnTakvimOnceki" class="takvimOk" type="button" aria-label="Önceki ay">‹</button>
+          <b id="takvimBaslik" aria-live="polite"></b>
+          <button id="btnTakvimSonraki" class="takvimOk" type="button" aria-label="Sonraki ay">›</button>
+        </div>
+        <div id="takvimIzgara" class="takvimIzgara" role="grid" aria-label="Aylık takvim"></div>
+        <div class="takvimAlt">
+          <button id="btnTakvimBugun" class="ikincil" type="button">Bugün</button>
+          <button id="btnTakvimNotEkle" class="ikincil" type="button" style="display:none">Bu güne not ekle</button>
+        </div>
+        <p id="takvimSecili" class="ipucu" aria-live="polite"></p>
+      </div>
+      <!-- Hızlı notlar: en fazla 3 sabitli/son not; gün seçiliyse o günün notları -->
+      <div class="panelKutu" data-kart="notlar">
+        <h3>📝 Notlarım</h3>
+        <div id="notKart"></div>
+        <div class="notKartDugmeler">
+          <button id="btnNotKartYeni" type="button">+ Yeni Not</button>
+          <button id="btnNotKartTumu" class="ikincil" type="button">Tüm notlarım</button>
+        </div>
+      </div>
+      <div class="panelKutu" data-kart="sorular"><h3>📌 Bugünün Soruları</h3><div id="panelSorular"></div></div>
+      <div class="panelKutu" data-kart="lider"><h3>🏆 Liderlik</h3><div id="panelLider"></div></div>
+      <div class="panelKutu" data-kart="hocalar"><h3>👨‍🏫 Öğretmenler</h3><div id="panelHocalar"></div><button id="btnPanelHoca" class="ikincil">Öğretmene Sor →</button></div>
+      <div class="panelKutu" data-kart="dersler"><h3>📚 Dersler</h3><div id="panelEtiket"></div></div>
+      <div class="panelKutu" data-kart="bugun"><h3>💪 Bugün</h3><div id="panelMotiv"></div></div>
+    </div>
+  </aside>
+  </div><!-- .kabuk sonu -->
+
+  <!-- Bağlantı hatası: sunucu yoksa sessizce demoya geçme, seçtir -->
+  <div id="baglantiHatasi" style="display:none" role="alertdialog" aria-label="Bağlantı hatası">
+    <div class="turKutu">
+      <h3>🔌 Sunucuya ulaşılamadı</h3>
+      <p>Ortak akış için sunucu açık olmalı. <b>baslat-backend.bat</b> dosyasına çift tıkla, sonra tekrar dene.</p>
+      <p class="ipucu">Demoyu açarsan yalnız bu cihazdaki veriler görünür ve <b>DENEME</b> yazar. Gerçek hesabın etkilenmez.</p>
+      <button id="btnBaglanTekrar">🔄 Tekrar dene</button>
+      <button id="btnDemoAc" class="ikincil">🧪 Demoyu aç</button>
+    </div>
+  </div>
+
+  <!-- Tanıtım turu (ilk girişte 3 adım) -->
+  <div id="turKatman" style="display:none" role="dialog" aria-label="Tanıtım turu">
+    <div class="turKutu"><h3 id="turBaslik"></h3><p id="turMetin"></p>
+      <button id="btnTurSonraki">Sonraki →</button>
+      <button id="btnTurAtla" class="ikincil">Turu bitir</button>
+    </div>
+  </div>
+
+  <!-- Bildirim baloncuğu: alert yerine altta kayar yazı -->
+  <div id="toast"></div>
+  <!-- Yüzen panel düğmesi (dar ekranda sağ paneli açar, betiklerden ÖNCE olmalı!) -->
+  <button id="btnPanel" aria-label="Yardımcı paneli aç/kapat">📌</button>
+
+  <script src="api.js"></script>
+  <script src="program-kuyruk.js"></script>
+  <script src="video.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
